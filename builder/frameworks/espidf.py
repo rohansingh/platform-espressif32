@@ -91,7 +91,6 @@ def build_component(path):
                 src_filter += " +<*.c*>"
             for f in src_dirs:
                 src_filter += " +<%s/*.c*>" % f
-
     return envsafe.BuildLibrary(
         join("$BUILD_DIR", "%s" % basename(path)), path,
         src_filter=src_filter
@@ -105,7 +104,7 @@ def build_espidf_bootloader():
         LIBPATH=[
             join(FRAMEWORK_DIR, "components", "esp32", "ld"),
             join(FRAMEWORK_DIR, "components", "esp32", "lib"),
-            join(FRAMEWORK_DIR, "components", "bootloader", "src", "main")
+            join(FRAMEWORK_DIR, "components", "bootloader", "subproject", "main")
         ],
 
         LINKFLAGS=[
@@ -114,6 +113,7 @@ def build_espidf_bootloader():
             "-u", "call_user_start_cpu0",
             "-Wl,--gc-sections",
             "-T", "esp32.bootloader.ld",
+            "-T", "esp32.rom.spiram_incompatible_fns.ld",
             "-T", "esp32.rom.ld",
             "-T", "esp32.peripherals.ld",
             "-T", "esp32.bootloader.rom.ld"
@@ -160,7 +160,7 @@ def build_espidf_bootloader():
         join("$BUILD_DIR", "bootloader.elf"),
         envsafe.CollectBuildFiles(
             join("$BUILD_DIR", "bootloader"),
-            join(FRAMEWORK_DIR, "components", "bootloader", "src", "main")
+            join(FRAMEWORK_DIR, "components", "bootloader", "subproject", "main")
         )
     )
 
@@ -183,15 +183,18 @@ env.Prepend(
         join(FRAMEWORK_DIR, "components", "coap", "libcoap", "include"),
         join(FRAMEWORK_DIR, "components", "coap",
              "libcoap", "include", "coap"),
+        join(FRAMEWORK_DIR, "components", "console"),
         join(FRAMEWORK_DIR, "components", "cxx", "include"),
         join(FRAMEWORK_DIR, "components", "driver", "include"),
         join(FRAMEWORK_DIR, "components", "driver", "include", "driver"),
+        join(FRAMEWORK_DIR, "components", "esp_adc_cal", "include"),
         join(FRAMEWORK_DIR, "components", "esp32", "include"),
         join(FRAMEWORK_DIR, "components", "ethernet", "include"),
         join(FRAMEWORK_DIR, "components", "expat", "include", "expat"),
         join(FRAMEWORK_DIR, "components", "expat", "port", "include"),
         join(FRAMEWORK_DIR, "components", "fatfs", "src"),
         join(FRAMEWORK_DIR, "components", "freertos", "include"),
+        join(FRAMEWORK_DIR, "components", "heap", "include"),
         join(FRAMEWORK_DIR, "components", "jsmn", "include"),
         join(FRAMEWORK_DIR, "components", "json", "include"),
         join(FRAMEWORK_DIR, "components", "json", "port", "include"),
@@ -217,8 +220,10 @@ env.Prepend(
         join(FRAMEWORK_DIR, "components", "openssl", "include", "internal"),
         join(FRAMEWORK_DIR, "components", "openssl", "include", "platform"),
         join(FRAMEWORK_DIR, "components", "openssl", "include", "openssl"),
+        join(FRAMEWORK_DIR, "components", "pthread", "include"),
         join(FRAMEWORK_DIR, "components", "sdmmc", "include"),
         join(FRAMEWORK_DIR, "components", "spi_flash", "include"),
+        join(FRAMEWORK_DIR, "components", "spiffs", "include"),
         join(FRAMEWORK_DIR, "components", "tcpip_adapter", "include"),
         join(FRAMEWORK_DIR, "components", "soc", "esp32", "include"),
         join(FRAMEWORK_DIR, "components", "soc", "include"),
@@ -279,6 +284,7 @@ env.Append(
         "-u", "__cxa_guard_dummy",
         "-T", "esp32.common.ld",
         "-T", "esp32.rom.ld",
+        "-T", "esp32.rom.spiram_incompatible_fns.ld",
         "-T", "esp32.peripherals.ld"
     ],
 
@@ -353,6 +359,7 @@ env.Depends("$BUILD_DIR/$PROGNAME$PROGSUFFIX", env.ElfToBin(
 libs = []
 
 ignore_dirs = (
+    "app_trace",
     "bootloader",
     "bootloader_support",
     "esptool_py",

@@ -14,6 +14,7 @@
   },
   "version": "0.12.0",
   "packageRepositories": [
+    "https://gist.githubusercontent.com/rohansingh/1618e24c5902b3b9828b8181117eb7be/raw/6c0cc5cc24899654e58ca48777758bba23488022/manifest.json",
     "https://dl.bintray.com/platformio/dl-packages/manifest.json",
     "http://dl.platformio.org/packages/manifest.json",
     "https://raw.githubusercontent.com/eerimoq/simba/master/make/platformio/manifest.json",
@@ -50,7 +51,7 @@
     "framework-espidf": {
       "type": "framework",
       "optional": true,
-      "version": "~2.211.0"
+      "version": "~3.0.0-rc1"
     },
     "framework-simba": {
       "type": "framework",
